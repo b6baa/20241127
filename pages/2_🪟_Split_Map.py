@@ -16,7 +16,7 @@ st.sidebar.image(logo)
 st.title("Split-panel Map")
 
 with st.expander("See source code"):
-    with st.echo():
+    with st.echo(): #顯示程式碼且執行
         m = leafmap.Map()
         m.split_map(
             left_layer="ESA WorldCover 2020 S2 FCC", right_layer="ESA WorldCover 2020"
