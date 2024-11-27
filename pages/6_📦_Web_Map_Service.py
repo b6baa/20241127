@@ -1,79 +1,101 @@
-import ast
+# -*- coding: utf-8 -*-
+# Copyright 2018-2022 Streamlit Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+"""An example of showing geographic data."""
+
+import os
+
+import altair as alt
+import numpy as np
+import pandas as pd
+import pydeck as pdk
 import streamlit as st
-import leafmap.foliumap as leafmap
 
-st.set_page_config(layout="wide")
-
-markdown = """
-A Streamlit map template
-<https://github.com/opengeos/streamlit-map-template>
-"""
-
-st.sidebar.title("About")
-st.sidebar.info(markdown)
-logo = "https://i.imgur.com/UbOXYAU.png"
-st.sidebar.image(logo)
+# SETTING PAGE CONFIG TO WIDE MODE AND ADDING A TITLE AND FAVICON
+st.set_page_config(layout="wide", page_title="NYC Ridesharing Demo", page_icon=":taxi:")
 
 
-@st.cache_data
-def get_layers(url):
-    options = leafmap.get_wms_layers(url)
-    return options
+# LOAD DATA ONCE
+@st.cache_resource
+def load_data():
+    path = "uber-raw-data-sep14.csv.gz"
+    if not os.path.isfile(path):
+        path = f"https://github.com/streamlit/demo-uber-nyc-pickups/raw/main/{path}"
 
-
-st.title("Web Map Service (WMS)")
-st.markdown(
-    """
-This app is a demonstration of loading Web Map Service (WMS) layers. Simply enter the URL of the WMS service
-in the text box below and press Enter to retrieve the layers. Go to https://apps.nationalmap.gov/services to find
-some WMS URLs if needed.
-"""
-)
-
-row1_col1, row1_col2 = st.columns([3, 1.3])
-width = None
-height = 600
-layers = None
-
-with row1_col2:
-
-    esa_landcover = "https://services.terrascope.be/wms/v2"
-    url = st.text_input(
-        "Enter a WMS URL:", value="https://services.terrascope.be/wms/v2"
+    data = pd.read_csv(
+        path,
+        nrows=100000,  # approx. 10% of data
+        names=[
+            "date/time",
+            "lat",
+            "lon",
+        ],  # specify names directly since they don't change
+        skiprows=1,  # don't read header since names specified directly
+        usecols=[0, 1, 2],  # doesn't load last column, constant value "B02512"
+        parse_dates=[
+            "date/time"
+        ],  # set as datetime instead of converting after the fact
     )
-    empty = st.empty()
 
-    if url:
-        options = get_layers(url)
+    return data
 
-        default = None
-        if url == esa_landcover:
-            default = "WORLDCOVER_2020_MAP"
-        layers = empty.multiselect(
-            "Select WMS layers to add to the map:", options, default=default
+
+# FUNCTION FOR AIRPORT MAPS
+def map(data, lat, lon, zoom):
+    st.write(
+        pdk.Deck(
+            map_style="mapbox://styles/mapbox/light-v9",
+            initial_view_state={
+                "latitude": lat,
+                "longitude": lon,
+                "zoom": zoom,
+                "pitch": 50,
+            },
+            layers=[
+                pdk.Layer(
+                    "HexagonLayer",
+                    data=data,
+                    get_position=["lon", "lat"],
+                    radius=100,
+                    elevation_scale=4,
+                    elevation_range=[0, 1000],
+                    pickable=True,
+                    extruded=True,
+                ),
+            ],
         )
-        add_legend = st.checkbox("Add a legend to the map", value=True)
-        if default == "WORLDCOVER_2020_MAP":
-            legend = str(leafmap.builtin_legends["ESA_WorldCover"])
-        else:
-            legend = ""
-        if add_legend:
-            legend_text = st.text_area(
-                "Enter a legend as a dictionary {label: color}",
-                value=legend,
-                height=200,
-            )
+    )
 
-    with row1_col1:
-        m = leafmap.Map(center=(36.3, 0), zoom=2)
 
-        if layers is not None:
-            for layer in layers:
-                m.add_wms_layer(
-                    url, layers=layer, name=layer, attribution=" ", transparent=True
-                )
-        if add_legend and legend_text:
-            legend_dict = ast.literal_eval(legend_text)
-            m.add_legend(legend_dict=legend_dict)
+# FILTER DATA FOR A SPECIFIC HOUR, CACHE
+@st.cache_data
+def filterdata(df, hour_selected):
+    return df[df["date/time"].dt.hour == hour_selected]
 
-        m.to_streamlit(width, height)
+
+# CALCULATE MIDPOINT FOR GIVEN SET OF DATA
+@st.cache_data
+def mpoint(lat, lon):
+    return (np.average(lat), np.average(lon))
+
+
+# FILTER DATA BY HOUR
+@st.cache_data
+def histdata(df, hr):
+    filtered = data[
+        (df["date/time"].dt.hour >= hr) & (df["date/time"].dt.hour < (hr + 1))
+    ]
+
+    hist = np.histogram(filtered["date/time"].dt.minute, bins=60, range=(0, 60))[0]
