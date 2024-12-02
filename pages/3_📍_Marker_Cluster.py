@@ -19,14 +19,14 @@ with st.expander("See source code"):
     with st.echo():
 
         m = leafmap.Map(center=[40, -100], zoom=4)
-        cities = "https://raw.githubusercontent.com/giswqs/leafmap/master/examples/data/us_cities.csv"
-        regions = "https://raw.githubusercontent.com/giswqs/leafmap/master/examples/data/us_regions.geojson"
+        bus_stop = "臺中市市區公車站牌資料.csv"
+        regions = "台中市區界_TWD97-1.shp"
 
         m.add_geojson(regions, layer_name="US Regions")
         m.add_points_from_xy(
             cities,
-            x="longitude",
-            y="latitude",
+            x="經度",
+            y="緯度",
             color_column="region",
             icon_names=["gear", "map", "leaf", "globe"],
             spin=True,
