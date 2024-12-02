@@ -22,7 +22,7 @@ with st.expander("See source code"):
         m.add_heatmap(
             filepath,
             latitude="緯度(步道大約位置)",
-            longitude"經度(步道大約位置)"=,
+            longitude="經度(步道大約位置)",
             value="pop_max",
             name="Heat map",
             radius=20,
