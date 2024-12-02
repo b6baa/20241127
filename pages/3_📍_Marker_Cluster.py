@@ -28,12 +28,12 @@ with st.expander("See source code"):
         #m.add_geojson(regions_geojson, layer_name="臺中市區界")
         m.add_geojson(url, layer_name="新化斷層活動斷層地質敏感區")
         #m.add_points_from_xy(
-            bus_stop,
-            x="經度",
-            y="緯度",
-            icon_names=["gear", "map", "leaf", "globe"],
-            spin=True,
-            add_legend=True,
-        )
+            #bus_stop,
+            #x="經度",
+            #y="緯度",
+            #icon_names=["gear", "map", "leaf", "globe"],
+            #spin=True,
+            #add_legend=True,
+        #)
 
 m.to_streamlit(height=700)
