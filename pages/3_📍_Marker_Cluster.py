@@ -24,8 +24,8 @@ with st.expander("See source code"):
         
         m.add_points_from_xy(
             bus_stop,
-            x="經度",
-            y="緯度",
+            x="經度(步道大約位置)",
+            y="緯度(步道大約位置)",
             icon_names=["gear", "map", "leaf", "globe"],
             spin=True,
             add_legend=True,
