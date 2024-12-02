@@ -19,8 +19,8 @@ st.title("Marker Cluster")
 
 with st.expander("See source code"):
     with st.echo():
-        m = leafmap.Map(center=[24.14734503954353, 120.67316364818225], zoom=6)
-        bus_stop = gpd.read_file("https://github.com/b6baa/20241127ex2/raw/refs/heads/main/%E8%87%BA%E4%B8%AD%E5%B8%82%E5%B8%82%E5%8D%80%E5%85%AC%E8%BB%8A%E7%AB%99%E7%89%8C%E8%B3%87%E6%96%99.csv")
+        m = leafmap.Map(center=[24.14734503954353, 120.67316364818225], zoom=14)
+        bus_stop = gpd.read_file("https://github.com/b6baa/20241127ex2/raw/refs/heads/main/%E8%87%BA%E4%B8%AD%E5%B8%82%E5%81%A5%E8%A1%8C%E6%AD%A5%E9%81%93%E8%B3%87%E6%96%991131024(%E4%BF%AE%E5%A2%9E%E5%8A%A0%E7%B6%93%E7%B7%AF%E5%BA%A6).csv.csv")
         
         m.add_points_from_xy(
             bus_stop,
