@@ -32,6 +32,6 @@ with st.expander("See source code"):
 
 m.to_streamlit(height=700)
 
-st.subheader("DataFrame")
+st.subheader("步道資訊")
 df = pd.DataFrame(data)
 st.dataframe(df)  # Same as st.write(df)
