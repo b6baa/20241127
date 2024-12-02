@@ -18,11 +18,11 @@ st.title("Marker Cluster")
 
 with st.expander("See source code"):
     with st.echo():
-        gdf = gpd.read_file("台中市區界_TWD97-1.shp")
+        gdf = gpd.read_file("https://github.com/b6baa/20241127ex2/raw/3edcd55cd41bc1238004abe6d58e0ecf6fefac32/%E5%8F%B0%E4%B8%AD%E5%B8%82%E5%8D%80%E7%95%8C_TWD97-1.shp")
         regions_geojson = gdf.to_json()
 
         m = leafmap.Map(center=[40, -100], zoom=4)
-        bus_stop = "臺中市市區公車站牌資料.csv"
+        bus_stop = "https://github.com/b6baa/20241127ex2/raw/3edcd55cd41bc1238004abe6d58e0ecf6fefac32/%E8%87%BA%E4%B8%AD%E5%B8%82%E5%B8%82%E5%8D%80%E5%85%AC%E8%BB%8A%E7%AB%99%E7%89%8C%E8%B3%87%E6%96%99.csv"
         
         m.add_geojson(regions_geojson, layer_name="臺中市區界")
         m.add_points_from_xy(
